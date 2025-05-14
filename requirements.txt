@@ -2,3 +2,4 @@ streamlit-autorefresh
 pandas
 kiteconnect
 plotly
+pytz

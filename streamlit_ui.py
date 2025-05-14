@@ -4,6 +4,11 @@ from kiteconnect import KiteConnect
 import datetime
 import pandas as pd
 import plotly.graph_objects as go
+import pytz
+import datetime
+
+# Define the IST timezone
+IST = pytz.timezone('Asia/Kolkata')
 
 # Auto-refresh every 1 minute (60,000 ms)
 st_autorefresh(interval=60000, key="refresh")
@@ -41,12 +46,15 @@ if st.button("Next") or ('access_token' in st.session_state and resulting_url):
         total_pnl = sum(pos['pnl'] for pos in net_positions)
 
         # Save PnL and time
-        now = datetime.datetime.now()
+        # Get the current time in GMT and convert it to IST
+        now = datetime.datetime.now(pytz.utc)  # Get time in UTC
+        now_ist = now.astimezone(IST)  # Convert to IST
+        # Save PnL and time
         st.session_state.pnl_history.append(total_pnl)
-        st.session_state.timestamps.append(now)
+        st.session_state.timestamps.append(now_ist)
 
         df = pd.DataFrame({
-            'Timestamp': st.session_state.timestamps,
+            'Timestamp': [ts.astimezone(IST) for ts in st.session_state.timestamps],  # Convert all timestamps to IST
             'PnL': st.session_state.pnl_history
         })
 
